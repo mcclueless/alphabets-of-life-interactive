@@ -1,0 +1,22 @@
+---
+interface Props {
+  src: string;
+  caption?: string;
+  alt?: string;
+}
+const { src, caption = "", alt } = Astro.props;
+const altText = alt ?? caption ?? "Table rendered as image.";
+---
+
+<figure class="table-figure wide" role="group">
+  <img src={src} alt={altText} loading="lazy" decoding="async" data-zoomable="true" data-zoom-src={src} />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .table-figure img {
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    padding: 0.5rem;
+  }
+</style>

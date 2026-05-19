@@ -1,0 +1,87 @@
+# Amplify Hosting response-header rules.
+# Applied to the deployed assets in the order listed; later patterns can extend
+# earlier ones for the same file (Amplify merges by key).
+
+customHeaders:
+  # ----------------------------------------------------------------- security baseline (all responses)
+  - pattern: '**'
+    headers:
+      - key: 'Strict-Transport-Security'
+        value: 'max-age=63072000; includeSubDomains; preload'
+      - key: 'X-Content-Type-Options'
+        value: 'nosniff'
+      - key: 'Referrer-Policy'
+        value: 'strict-origin-when-cross-origin'
+      - key: 'X-Frame-Options'
+        value: 'SAMEORIGIN'
+      - key: 'Permissions-Policy'
+        value: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()'
+
+  # ----------------------------------------------------------------- HTML — short cache, must-revalidate
+  - pattern: '**/*.html'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=300, must-revalidate'
+
+  # ----------------------------------------------------------------- versioned hashed bundles — far-future
+  # Astro emits hashed filenames under /_astro/ so they are safely immutable.
+  - pattern: '/_astro/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+
+  # ----------------------------------------------------------------- images, tables, fonts, og card
+  - pattern: '/images/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+  - pattern: '/tables/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+  - pattern: '/fonts/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+  - pattern: '/audio/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+  - pattern: '/og-image.*'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=86400'
+
+  # ----------------------------------------------------------------- Pagefind search index
+  - pattern: '/pagefind/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=86400'
+
+  # ----------------------------------------------------------------- robots / sitemap / llms
+  - pattern: '/robots.txt'
+    headers:
+      - key: 'Content-Type'
+        value: 'text/plain; charset=utf-8'
+      - key: 'Cache-Control'
+        value: 'public, max-age=3600'
+  - pattern: '/sitemap*.xml'
+    headers:
+      - key: 'Content-Type'
+        value: 'application/xml; charset=utf-8'
+      - key: 'Cache-Control'
+        value: 'public, max-age=3600'
+  - pattern: '/llms*.txt'
+    headers:
+      - key: 'Content-Type'
+        value: 'text/plain; charset=utf-8'
+      - key: 'Cache-Control'
+        value: 'public, max-age=3600'
+
+  # ----------------------------------------------------------------- per-chapter glyph manifests (JSON)
+  - pattern: '/glyphs*.json'
+    headers:
+      - key: 'Content-Type'
+        value: 'application/json; charset=utf-8'
+      - key: 'Cache-Control'
+        value: 'public, max-age=86400'

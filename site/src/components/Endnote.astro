@@ -1,0 +1,24 @@
+---
+interface Props {
+  n: number | string;
+  kind?: "endnote" | "footnote";
+}
+const { n, kind = "endnote" } = Astro.props;
+const popoverId = `${kind}-${n}`;
+---
+
+<span class="endnote">
+  <button
+    type="button"
+    class="endnote__trigger"
+    popovertarget={popoverId}
+    aria-label={`${kind} ${n}`}
+    data-endnote-trigger={String(n)}
+  >
+    <sup>{n}</sup>
+  </button>
+  <div id={popoverId} class="endnote__panel" popover="auto" role="dialog" aria-labelledby={`${popoverId}-num`}>
+    <span class="endnote__num" id={`${popoverId}-num`}>{kind === "footnote" ? "Footnote" : "Note"} {n}</span>
+    <slot />
+  </div>
+</span>

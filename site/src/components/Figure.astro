@@ -1,0 +1,72 @@
+---
+interface Props {
+  src: string;
+  caption?: string;
+  alt?: string;
+  id?: string;
+  size?: "default" | "wide" | "full";
+  /** Intrinsic image dimensions — prevents Cumulative Layout Shift. */
+  width?: number;
+  height?: number;
+  /** disable WebP variants (e.g. for gif/svg) */
+  raw?: boolean;
+  /** opt out of click-to-zoom */
+  noZoom?: boolean;
+}
+
+const { src, caption, alt, id, size = "default", width, height, raw, noZoom } = Astro.props;
+const captionText = caption ?? "";
+// Meaningful alt-text fallback: parse "ch{NN}-fig-{NNNN}" from src for a non-empty alt
+// when no caption is provided. Better for screen readers, image search, and LLM crawlers.
+function fallbackAlt(s: string): string {
+  const m = s.match(/ch(\d+)-fig-(\d+)/);
+  if (m) {
+    const fig = parseInt(m[2], 10);
+    return `Figure ${fig} from Alphabets of Life`;
+  }
+  return "Illustration from Alphabets of Life";
+}
+const altText = alt ?? (captionText.trim() || fallbackAlt(src));
+
+const isRaster = !raw && /\.(jpg|jpeg|png)$/i.test(src);
+const stem = src.replace(/\.[^.]+$/, "");
+
+const widthHints = isRaster
+  ? [480, 960, 1920].map((w) => `${stem}.${w}.webp ${w}w`).join(", ")
+  : "";
+const sizesHint = "(min-width: 64rem) 720px, (min-width: 40rem) 70vw, 92vw";
+
+// Zoom target: prefer the 1920w webp for raster, otherwise the original
+const zoomSrc = isRaster ? `${stem}.1920.webp` : src;
+const zoomAttrs = noZoom ? {} : { "data-zoomable": "true", "data-zoom-src": zoomSrc };
+
+const classAttr = size === "default" ? "" : size;
+---
+
+<figure id={id} class={classAttr}>
+  {isRaster ? (
+    <picture>
+      <source type="image/webp" srcset={widthHints} sizes={sizesHint} />
+      <img
+        src={src}
+        alt={altText}
+        width={width}
+        height={height}
+        loading="lazy"
+        decoding="async"
+        {...zoomAttrs}
+      />
+    </picture>
+  ) : (
+    <img
+      src={src}
+      alt={altText}
+      width={width}
+      height={height}
+      loading="lazy"
+      decoding="async"
+      {...zoomAttrs}
+    />
+  )}
+  {captionText && <figcaption>{captionText}</figcaption>}
+</figure>

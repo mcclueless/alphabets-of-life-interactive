@@ -1,0 +1,31 @@
+version: 1
+applications:
+  - appRoot: site
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - node --version
+            - npm --version
+            - npm ci --no-audit --no-fund
+        build:
+          commands:
+            - echo "Building with SITE_URL=$SITE_URL"
+            - npm run build
+        postBuild:
+          commands:
+            - echo "Verifying critical artefacts present in dist/"
+            - test -f dist/index.html
+            - test -f dist/sitemap-index.xml
+            - test -f dist/robots.txt
+            - test -f dist/llms.txt
+            - test -d dist/pagefind
+            - echo "dist/ size:" && du -sh dist
+      artifacts:
+        baseDirectory: dist
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - site/node_modules/**/*
+          - site/.astro/**/*

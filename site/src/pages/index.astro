@@ -1,0 +1,146 @@
+---
+import Base from "~/layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const chapters = (await getCollection("chapters")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<Base title="Alphabets of Life" showHeader={false}>
+  <section class="hero">
+    <div class="hero__inner">
+      <p class="hero__eyebrow">An interactive edition</p>
+      <h1 class="hero__title">Alphabets of Life</h1>
+      <p class="hero__byline">Kim H. Veltman</p>
+      <p class="hero__lede">
+        How runes and alphabets begin as alphabets of life — <i>alpha vitae</i> — reflecting body, mind and cosmos.
+        Twelve chapters trace the journey from marks and breath to the spread of writing systems eastwards and westwards across the world.
+      </p>
+      <a class="hero__cta" href="/chapters/00-preface/">Begin reading <span aria-hidden>→</span></a>
+    </div>
+  </section>
+
+  <section id="chapters" class="toc">
+    <div class="toc__grid">
+      {chapters.map((chap, idx) => (
+        <a class="toc__row" href={`/chapters/${chap.data.slug}/`}>
+          <span class="toc__num">{String(idx).padStart(2, "0")}</span>
+          <span class="toc__title">{chap.data.title}</span>
+          {chap.data.chapterNumber && (
+            <span class="toc__chapter">Chapter {chap.data.chapterNumber}</span>
+          )}
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem clamp(1rem, 5vw, 3rem);
+    background:
+      radial-gradient(ellipse at top, rgba(181, 145, 91, 0.08), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(177, 74, 50, 0.06), transparent 70%),
+      var(--color-paper);
+  }
+  .hero__inner {
+    max-width: 36rem;
+    text-align: center;
+  }
+  .hero__eyebrow {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin: 0 0 3rem;
+  }
+  .hero__title {
+    font-family: var(--font-display);
+    font-size: clamp(3.4rem, 1.8rem + 7vw, 7.5rem);
+    font-weight: 360;
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .hero__byline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--color-ink-soft);
+    margin: 0.6rem 0 2.5rem;
+  }
+  .hero__lede {
+    font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.2rem);
+    line-height: 1.6;
+    color: var(--color-ink-soft);
+    text-wrap: pretty;
+    margin: 0 auto 3rem;
+    max-width: 32rem;
+  }
+  .hero__cta {
+    font-family: var(--font-ui);
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-ink);
+    padding-bottom: 0.4em;
+    transition: gap 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+  }
+  .hero__cta:hover { gap: 1em; color: var(--color-accent); border-color: var(--color-accent); }
+
+  .toc {
+    padding: 6rem clamp(1rem, 5vw, 3rem);
+    max-width: 72rem;
+    margin-inline: auto;
+  }
+  .toc__grid { display: grid; gap: 1px; background: var(--color-rule); border-block: 1px solid var(--color-rule); }
+  .toc__row {
+    display: grid;
+    grid-template-columns: 4rem 1fr auto;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding: 1.6rem clamp(0.5rem, 2vw, 1.5rem);
+    background: var(--color-paper);
+    text-decoration: none;
+    color: var(--color-ink);
+    transition: background 0.2s, transform 0.2s, padding-left 0.2s;
+  }
+  .toc__row:hover { background: var(--color-paper-soft); padding-left: clamp(1rem, 3vw, 2rem); }
+  .toc__num {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--color-accent);
+    font-feature-settings: "tnum";
+  }
+  .toc__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 1rem + 0.8vw, 1.8rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .toc__chapter {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+    justify-self: end;
+  }
+
+  @media (max-width: 40rem) {
+    .toc__row { grid-template-columns: 3rem 1fr; gap: 1rem; }
+    .toc__chapter { grid-column: 2; justify-self: start; margin-top: 0.25rem; }
+  }
+</style>

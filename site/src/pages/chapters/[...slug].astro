@@ -1,0 +1,182 @@
+---
+import Base from "~/layouts/Base.astro";
+import { getCollection, render } from "astro:content";
+import GlyphField from "~/scenes/GlyphField.tsx";
+import Mandala from "~/scenes/Mandala.tsx";
+import BreathPulse from "~/scenes/BreathPulse.tsx";
+import InkFlow from "~/scenes/InkFlow.tsx";
+import Constellation from "~/scenes/Constellation.tsx";
+import HorizonWalk from "~/scenes/HorizonWalk.tsx";
+import EastwardArcs from "~/scenes/EastwardArcs.tsx";
+import WestwardRiver from "~/scenes/WestwardRiver.tsx";
+import MorphWall from "~/scenes/MorphWall.tsx";
+import RadialDendrogram from "~/scenes/RadialDendrogram.tsx";
+import PolygonSnap from "~/scenes/PolygonSnap.tsx";
+import GravityPulse from "~/scenes/GravityPulse.tsx";
+
+export async function getStaticPaths() {
+  const chapters = (await getCollection("chapters")).sort(
+    (a, b) => a.data.order - b.data.order,
+  );
+  return chapters.map((chap, idx) => ({
+    params: { slug: chap.data.slug },
+    props: {
+      chap,
+      prev: idx > 0 ? chapters[idx - 1] : null,
+      next: idx < chapters.length - 1 ? chapters[idx + 1] : null,
+    },
+  }));
+}
+
+const { chap, prev, next } = Astro.props;
+const { Content } = await render(chap);
+const slug = chap.data.slug;
+
+// Convert straight ASCII quotes to typographic curly ones — keeps meta descriptions,
+// OG/Twitter cards, and JSON-LD free of `&#34;` / `&#39;` numeric entities.
+function smartQuotes(s: string): string {
+  return s
+    // HTML entities that might already be in the source MDX
+    .replace(/&#34;|&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&amp;/g, "&")
+    // Double quotes: open after start/space/punct, close otherwise
+    .replace(/(^|[\s\(\[\{—–-])"/g, "$1“")
+    .replace(/"/g, "”")
+    // Single quotes / apostrophes: open after start/space/punct, close otherwise
+    .replace(/(^|[\s\(\[\{—–-])'/g, "$1‘")
+    .replace(/'/g, "’");
+}
+
+// Derive a per-chapter meta description from the first ~160 chars of clean body text.
+function chapterDescription(body: string, title: string): string {
+  const stripped = body
+    .replace(/^---[\s\S]*?---/, "")                 // frontmatter
+    .replace(/^import\s[^\n]*$/gm, "")              // import lines
+    .replace(/<(?:Figure|TableImage|Endnote|Pullquote)\s[^>]*\/>/g, "") // self-closing components
+    .replace(/<Endnote[^>]*>.*?<\/Endnote>/gs, "")  // endnote popovers
+    .replace(/<[^>]+>/g, "")                        // any other HTML/JSX
+    .replace(/^#+\s.*$/gm, "")                       // heading lines
+    .replace(/\*\*?([^*]+)\*\*?/g, "$1")             // strip bold/italic markers
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")         // strip [text](url) → text
+    .replace(/[`>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const clean = smartQuotes(stripped);
+  if (clean.length < 40) {
+    return smartQuotes(`${title} — a chapter from Kim H. Veltman's Alphabets of Life, an interactive scholarly edition.`);
+  }
+  if (clean.length <= 158) return clean;
+  const truncated = clean.slice(0, 158);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return (lastSpace > 100 ? truncated.slice(0, lastSpace) : truncated) + "…";
+}
+
+const description = chapterDescription(chap.body ?? "", chap.data.title);
+
+// Article JSON-LD (chapter pages get richer schema than the homepage Book schema)
+const siteUrl = (Astro.site ?? new URL("http://localhost:4321")).toString().replace(/\/$/, "");
+const canonicalUrl = `${siteUrl}/chapters/${chap.data.slug}/`;
+const datePublished = "2014-01-01";
+const dateModified = new Date().toISOString().slice(0, 10);
+
+const author = {
+  "@type": "Person",
+  "name": "Kim H. Veltman",
+  "sameAs": [
+    "https://en.wikipedia.org/wiki/Kim_H._Veltman",
+    "https://www.sumscorp.com/",
+  ],
+};
+const publisher = {
+  "@type": "Organization",
+  "name": "Twinscorp",
+};
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": chap.data.title,
+  "description": description,
+  "image": `${siteUrl}/og-image.png`,
+  "datePublished": datePublished,
+  "dateModified": dateModified,
+  "author": author,
+  "publisher": publisher,
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl },
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Alphabets of Life",
+    "author": author,
+    "publisher": publisher,
+    "datePublished": "2014",
+  },
+  ...(chap.data.chapterNumber ? { "position": chap.data.chapterNumber } : {}),
+};
+
+const breadcrumbsJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Alphabets of Life", "item": `${siteUrl}/` },
+    { "@type": "ListItem", "position": 2, "name": chap.data.title, "item": canonicalUrl },
+  ],
+};
+---
+
+<Base
+  title={chap.data.title}
+  description={description}
+  ogType="article"
+  datePublished={datePublished}
+  dateModified={dateModified}
+  chapterNumber={chap.data.chapterNumber}
+  jsonLd={[articleJsonLd, breadcrumbsJsonLd]}
+>
+  <article class="chapter">
+    <p class="chapter-eyebrow">
+      {chap.data.chapterNumber ? `Chapter ${chap.data.chapterNumber}` : "Front Matter"}
+    </p>
+    <h1 class="chapter-title prose">{chap.data.title}</h1>
+    <hr class="chapter-rule" />
+
+    {slug === "05-marks-signs-symbols"   && <GlyphField        client:visible />}
+    {slug === "06-sanskrit-framework"    && <Mandala           client:visible />}
+    {slug === "07-breathing-and-life"    && <BreathPulse       client:visible />}
+    {slug === "08-movements-and-matrices" && <InkFlow          client:visible />}
+    {slug === "09-heavenly-models"       && <Constellation     client:visible />}
+    {slug === "10-earthly-reflections"   && <HorizonWalk       client:visible />}
+    {slug === "11-eastwards"             && <EastwardArcs      client:visible />}
+    {slug === "12-westwards"             && <WestwardRiver     client:visible />}
+    {slug === "13-western-alphabets"     && <MorphWall         client:visible />}
+    {slug === "14-classes-of-alphabets"  && <RadialDendrogram  client:visible />}
+    {slug === "15-shapes-and-numbers"    && <PolygonSnap       client:visible />}
+    {slug === "16-conclusions"           && <GravityPulse      client:visible />}
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <nav class="prose chapter-nav">
+      {prev ? (
+        <a href={`/chapters/${prev.data.slug}/`} class="prev">
+          <span class="label">← Previous</span>
+          <span class="title">{prev.data.title}</span>
+        </a>
+      ) : <span />}
+      {next ? (
+        <a href={`/chapters/${next.data.slug}/`} class="next">
+          <span class="label">Next →</span>
+          <span class="title">{next.data.title}</span>
+        </a>
+      ) : <span />}
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .chapter {
+    padding: 4rem clamp(1rem, 5vw, 3rem) 6rem;
+    max-width: 80rem;
+    margin-inline: auto;
+  }
+</style>

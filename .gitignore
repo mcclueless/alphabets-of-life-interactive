@@ -1,0 +1,37 @@
+# Source documents (large, copyright-bearing, not in version control)
+Alphabets of Life*.doc
+Alphabets of Life*.docx
+*.EMPTY-STUB.docx
+ALPHABETS/
+ALPHABETS-2/
+*.pdf
+
+# Python extraction venv + caches
+tools/extract/.venv/
+__pycache__/
+*.pyc
+.python-version
+tools/extract/build/
+
+# Node / Astro build output
+site/node_modules/
+site/dist/
+site/.astro/
+site/.cache/
+*.log
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Local settings
+.claude/settings.local.json
+
+# NOTE on extracted artefacts (MDX + images + tables + glyph manifests):
+# These are COMMITTED to the repo so Amplify can build without re-running the
+# extraction pipeline (which would require Python + LibreOffice on the build
+# container, plus the source docx).  Run `python tools/extract/extract.py` and
+# `python tools/extract/post_process.py` whenever the source docx changes, then
+# commit the regenerated artefacts.
