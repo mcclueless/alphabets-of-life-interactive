@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { loadGlyphSet, useCanvasScene, type LoadedGlyph } from "./_shared/scene";
 
 /**
@@ -42,28 +42,25 @@ export default function PolygonSnap() {
 
   useEffect(() => { loadGlyphSet("15-shapes-and-numbers", COUNT).then(setGlyphs); }, []);
 
-  // Initialize once
-  const _init = useMemo(() => {
-    const targets = polygonTargets(COUNT, sides);
-    itemsRef.current = targets.map((t, i) => ({
-      glyphIdx: i, x: 0, y: 0, tx: t.x, ty: t.y,
-    }));
-    return true;
-  }, []);
-  void _init;
-
-  // Update targets on sides change
+  // Update targets whenever sides changes (post-hydration only).
   useEffect(() => {
+    if (itemsRef.current.length !== COUNT) return; // initialized lazily in draw
     const targets = polygonTargets(COUNT, sides);
-    if (itemsRef.current.length === COUNT) {
-      itemsRef.current.forEach((it, i) => {
-        it.tx = targets[i].x;
-        it.ty = targets[i].y;
-      });
-    }
+    itemsRef.current.forEach((it, i) => {
+      it.tx = targets[i].x;
+      it.ty = targets[i].y;
+    });
   }, [sides]);
 
   useCanvasScene(ref, ({ ctx, width, height, dt }) => {
+    // Lazy init the items array on the first frame — keeps the component
+    // pure during render/SSR so React's hydration doesn't see a mismatch.
+    if (itemsRef.current.length === 0) {
+      const targets = polygonTargets(COUNT, sides);
+      itemsRef.current = targets.map((t, i) => ({
+        glyphIdx: i, x: 0, y: 0, tx: t.x, ty: t.y,
+      }));
+    }
     ctx.clearRect(0, 0, width, height);
     const cx = width / 2;
     const cy = height / 2;

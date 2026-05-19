@@ -139,18 +139,21 @@ const breadcrumbsJsonLd = {
     <h1 class="chapter-title prose">{chap.data.title}</h1>
     <hr class="chapter-rule" />
 
-    {slug === "05-marks-signs-symbols"   && <GlyphField        client:visible />}
-    {slug === "06-sanskrit-framework"    && <Mandala           client:visible />}
-    {slug === "07-breathing-and-life"    && <BreathPulse       client:visible />}
-    {slug === "08-movements-and-matrices" && <InkFlow          client:visible />}
-    {slug === "09-heavenly-models"       && <Constellation     client:visible />}
-    {slug === "10-earthly-reflections"   && <HorizonWalk       client:visible />}
-    {slug === "11-eastwards"             && <EastwardArcs      client:visible />}
-    {slug === "12-westwards"             && <WestwardRiver     client:visible />}
+    {/* Canvas-based scenes: client:only — nothing useful to SSR, eliminates
+        any hydration-mismatch risk.  Animation starts as soon as JS hydrates. */}
+    {slug === "05-marks-signs-symbols"   && <GlyphField        client:only="react" />}
+    {slug === "06-sanskrit-framework"    && <Mandala           client:only="react" />}
+    {slug === "07-breathing-and-life"    && <BreathPulse       client:only="react" />}
+    {slug === "08-movements-and-matrices" && <InkFlow          client:only="react" />}
+    {slug === "09-heavenly-models"       && <Constellation     client:only="react" />}
+    {slug === "10-earthly-reflections"   && <HorizonWalk       client:only="react" />}
+    {slug === "11-eastwards"             && <EastwardArcs      client:only="react" />}
+    {slug === "12-westwards"             && <WestwardRiver     client:only="react" />}
+    {slug === "15-shapes-and-numbers"    && <PolygonSnap       client:only="react" />}
+    {slug === "16-conclusions"           && <GravityPulse      client:only="react" />}
+    {/* HTML / SVG scenes: keep client:visible so the labels/tree SSR for SEO. */}
     {slug === "13-western-alphabets"     && <MorphWall         client:visible />}
     {slug === "14-classes-of-alphabets"  && <RadialDendrogram  client:visible />}
-    {slug === "15-shapes-and-numbers"    && <PolygonSnap       client:visible />}
-    {slug === "16-conclusions"           && <GravityPulse      client:visible />}
 
     <div class="prose">
       <Content />
