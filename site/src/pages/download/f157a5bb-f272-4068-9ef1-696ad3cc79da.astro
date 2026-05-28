@@ -1,0 +1,199 @@
+---
+import "~/styles/globals.css";
+
+const siteUrl = (Astro.site ?? new URL("http://localhost:4321")).toString().replace(/\/$/, "");
+const pdfHref = "/pdfs/Alphabets%20of%20Life%20Scholars%20Edition%20vol.%201-2.pdf";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Download · Alphabets of Life</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E𓂀%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@400;500&display=swap"
+    />
+  </head>
+  <body class="dl-body">
+    <main class="dl-card">
+      <span class="dl-ornament" aria-hidden="true">❧</span>
+
+      <p class="dl-eyebrow">Kim H. Veltman Foundation</p>
+      <h1 class="dl-title">Thank you</h1>
+      <p class="dl-subtitle">
+        Your support keeps Kim Veltman's scholarly legacy alive<br />
+        and accessible to readers around the world.
+      </p>
+
+      <div class="dl-divider" aria-hidden="true"></div>
+
+      <div class="dl-book">
+        <p class="dl-book-name">Alphabets of Life</p>
+        <p class="dl-book-edition">Scientific Edition · Vol. 1–2</p>
+        <p class="dl-book-note">
+          Complete text with all appendices, extended footnotes,<br />
+          and full bibliographic references.
+        </p>
+      </div>
+
+      <a class="dl-btn" href={pdfHref} download="Alphabets-of-Life-Scientific-Edition.pdf">
+        <svg class="dl-btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
+          <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+        </svg>
+        <span>Download PDF</span>
+      </a>
+
+      <p class="dl-save-note">
+        Please save the file — the download link is not emailed.
+      </p>
+
+      <div class="dl-divider" aria-hidden="true"></div>
+
+      <a class="dl-back" href={siteUrl}>
+        <span aria-hidden="true">←</span> Return to the interactive edition
+      </a>
+    </main>
+  </body>
+</html>
+
+<style>
+  .dl-body {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem clamp(1rem, 5vw, 3rem);
+    background:
+      radial-gradient(ellipse at top, rgba(181, 145, 91, 0.07), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(177, 74, 50, 0.05), transparent 70%),
+      var(--color-paper);
+  }
+  .dl-card {
+    max-width: 30rem;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .dl-ornament {
+    font-size: 2rem;
+    color: var(--color-accent);
+    opacity: 0.6;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .dl-eyebrow {
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin: 0;
+  }
+  .dl-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 2rem + 2vw, 4rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin: 0;
+  }
+  .dl-subtitle {
+    font-size: 0.97rem;
+    line-height: 1.65;
+    color: var(--color-ink-soft);
+    margin: 0;
+  }
+  .dl-divider {
+    width: 3rem;
+    height: 1px;
+    background: var(--color-rule);
+    margin: 0.5rem 0;
+  }
+  .dl-book {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .dl-book-name {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .dl-book-edition {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+    margin: 0;
+  }
+  .dl-book-note {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--color-ink-soft);
+    margin: 0.4rem 0 0;
+  }
+  .dl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.85rem 2rem;
+    background: var(--color-accent);
+    color: var(--color-paper);
+    text-decoration: none;
+    border-radius: 3px;
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    box-shadow: 0 2px 12px rgba(177, 74, 50, 0.28);
+    transition: opacity 0.18s, transform 0.15s, box-shadow 0.18s;
+    margin: 0.5rem 0 0;
+  }
+  .dl-btn:hover {
+    opacity: 0.88;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 18px rgba(177, 74, 50, 0.36);
+  }
+  .dl-btn-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+  }
+  .dl-save-note {
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    color: var(--color-ink-faint);
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+  .dl-back {
+    font-family: var(--font-ui);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-soft);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 0.1em;
+    transition: color 0.18s, border-color 0.18s;
+  }
+  .dl-back:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+</style>

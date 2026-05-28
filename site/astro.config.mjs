@@ -33,7 +33,9 @@ export default defineConfig({
       ],
     }),
     react(),
-    sitemap(),
+    sitemap({
+      filter: (page) => !page.includes("/download/"),
+    }),
   ],
   vite: {
     plugins: [tailwindcss()],

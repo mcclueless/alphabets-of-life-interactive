@@ -78,6 +78,22 @@ customHeaders:
       - key: 'Cache-Control'
         value: 'public, max-age=3600'
 
+  # ----------------------------------------------------------------- purchase download page — no-store, noindex
+  - pattern: '/download/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'no-store'
+      - key: 'X-Robots-Tag'
+        value: 'noindex, nofollow'
+
+  # ----------------------------------------------------------------- purchased PDF — force download, no cache
+  - pattern: '/pdfs/**'
+    headers:
+      - key: 'Cache-Control'
+        value: 'no-store'
+      - key: 'Content-Disposition'
+        value: 'attachment'
+
   # ----------------------------------------------------------------- per-chapter glyph manifests (JSON)
   - pattern: '/glyphs*.json'
     headers:

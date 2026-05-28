@@ -5,6 +5,13 @@ import { getCollection } from "astro:content";
 const chapters = (await getCollection("chapters")).sort(
   (a, b) => a.data.order - b.data.order,
 );
+
+const siteUrl = (Astro.site ?? new URL("http://localhost:4321")).toString().replace(/\/$/, "");
+// Download page UUID — not guessable, not in sitemap, disallowed in robots.txt.
+// Change this UUID to rotate the download URL if it ever leaks.
+const DOWNLOAD_UUID = "f157a5bb-f272-4068-9ef1-696ad3cc79da";
+const paypalReturnUrl = `${siteUrl}/download/${DOWNLOAD_UUID}/`;
+const paypalCancelUrl = `${siteUrl}/`;
 ---
 
 <Base title="Alphabets of Life" showHeader={false}>
@@ -18,6 +25,33 @@ const chapters = (await getCollection("chapters")).sort(
         Twelve chapters trace the journey from marks and breath to the spread of writing systems eastwards and westwards across the world.
       </p>
       <a class="hero__cta" href="/chapters/00-preface/">Begin reading <span aria-hidden>→</span></a>
+
+      <div class="hero__support">
+        <span class="hero__support-ornament" aria-hidden="true">❧</span>
+        <p class="hero__support-label">Kim H. Veltman Foundation</p>
+        <p class="hero__support-text">
+          Support the preservation of Kim Veltman's scholarly legacy — receive the
+          complete <em>Scientific Edition</em> of <em>Alphabets&nbsp;of&nbsp;Life</em>
+          with all appendices, extended footnotes, and full bibliographies.
+        </p>
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="hero__buy-form">
+          <input type="hidden" name="cmd" value="_xclick" />
+          <input type="hidden" name="business" value="kim_veltman@hotmail.com" />
+          <input type="hidden" name="lc" value="EN" />
+          <input type="hidden" name="item_name" value="Alphabets of Life — Scientific Edition (PDF)" />
+          <input type="hidden" name="item_number" value="aol-scientific-ed" />
+          <input type="hidden" name="amount" value="4.99" />
+          <input type="hidden" name="currency_code" value="EUR" />
+          <input type="hidden" name="no_shipping" value="1" />
+          <input type="hidden" name="return" value={paypalReturnUrl} />
+          <input type="hidden" name="cancel_return" value={paypalCancelUrl} />
+          <button type="submit" class="hero__buy" aria-label="Donate €4.99 and download the Scientific Edition PDF">
+            <span class="hero__buy-price">€&thinsp;4.99</span>
+            <span class="hero__buy-label">Download Scientific Edition</span>
+          </button>
+        </form>
+        <p class="hero__support-note">Paid via PayPal · PDF delivered immediately after payment</p>
+      </div>
     </div>
   </section>
 
@@ -99,6 +133,89 @@ const chapters = (await getCollection("chapters")).sort(
     gap: 0.6em;
   }
   .hero__cta:hover { gap: 1em; color: var(--color-accent); border-color: var(--color-accent); }
+
+  /* ── Foundation support / buy block ─────────────────────────────── */
+  .hero__support {
+    margin-top: 3.5rem;
+    padding-top: 2.8rem;
+    border-top: 1px solid var(--color-rule);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .hero__support-ornament {
+    font-size: 1.5rem;
+    color: var(--color-ink-faint);
+    line-height: 1;
+    margin-bottom: -0.15rem;
+  }
+  .hero__support-label {
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin: 0;
+  }
+  .hero__support-text {
+    font-size: 0.93rem;
+    line-height: 1.6;
+    color: var(--color-ink-soft);
+    text-align: center;
+    max-width: 27rem;
+    margin: 0;
+  }
+  .hero__buy-form { margin: 0.4rem 0 0; }
+  .hero__buy {
+    display: inline-flex;
+    align-items: stretch;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+    overflow: hidden;
+    padding: 0;
+    font-family: var(--font-ui);
+    transition: opacity 0.18s, transform 0.15s, box-shadow 0.18s;
+    box-shadow: 0 2px 10px rgba(177, 74, 50, 0.22);
+  }
+  .hero__buy:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(177, 74, 50, 0.32);
+  }
+  .hero__buy-price {
+    display: flex;
+    align-items: center;
+    padding: 0.72rem 1.1rem;
+    background: #8f3220;
+    color: var(--color-paper);
+    font-size: 1rem;
+    font-weight: 600;
+    font-feature-settings: "tnum";
+    letter-spacing: 0.02em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .hero__buy-label {
+    display: flex;
+    align-items: center;
+    padding: 0.72rem 1.3rem;
+    background: var(--color-accent);
+    color: var(--color-paper);
+    font-size: 0.82rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .hero__support-note {
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    color: var(--color-ink-faint);
+    letter-spacing: 0.03em;
+    margin: 0;
+  }
 
   .toc {
     padding: 6rem clamp(1rem, 5vw, 3rem);
